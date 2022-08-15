@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>x509_window</class>
+ <widget class="QWidget" name="x509_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>619</width>
+    <height>794</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>x509 Certificate</string>
+  </property>
+  <widget class="QTableWidget" name="tableWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>530</y>
+     <width>591</width>
+     <height>192</height>
+    </rect>
+   </property>
+   <row>
+    <property name="text">
+     <string>Country Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Locality Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>New Row</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>State or Province Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Street Address</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Organization Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Organizational Unit Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Serial Number</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Surname</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Given Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>New Row</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Title</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Generation Qualifier</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>DN Qualifier</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>New Row</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Pseudonym</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>User ID</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Email Address</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>E-mail Address</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Jurisdiction Country Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Jurisdiction State or Province Name</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>New Row</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Business Category</string>
+    </property>
+   </row>
+   <row>
+    <property name="text">
+     <string>Postal Code</string>
+    </property>
+   </row>
+   <column>
+    <property name="text">
+     <string>Attribute</string>
+    </property>
+   </column>
+  </widget>
+  <widget class="QLabel" name="x509_label_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>190</y>
+     <width>111</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>RSA Private Key</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="x509_button_3">
+   <property name="geometry">
+    <rect>
+     <x>500</x>
+     <y>350</y>
+     <width>100</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Select</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="x509_label_1_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>230</y>
+     <width>171</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Generate a new RSA Private Key</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="x509_line_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>350</y>
+     <width>461</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="x509_button_4">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>260</y>
+     <width>100</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="x509_label_1_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>320</y>
+     <width>121</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>Browse your PEM file</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="create_title">
+   <property name="geometry">
+    <rect>
+     <x>150</x>
+     <y>10</y>
+     <width>341</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>36</pointsize>
+    </font>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
+   <property name="text">
+    <string>x509 Certificate</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="x509_label_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>500</y>
+     <width>141</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Attributes (optional)</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="x509_button_2">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>750</y>
+     <width>100</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="x509_button_1">
+   <property name="geometry">
+    <rect>
+     <x>110</x>
+     <y>750</y>
+     <width>100</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Create</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="x509_line_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>440</y>
+     <width>601</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="x509_label_1_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>410</y>
+     <width>171</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string>PEM file password (not stored)</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="x509_line_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>601</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="x509_label_3">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>100</y>
+     <width>81</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>URL</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

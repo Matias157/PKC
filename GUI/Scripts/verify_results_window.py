@@ -9,7 +9,6 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from numpy import insert
 
 
 class Ui_verify_results_window(object):

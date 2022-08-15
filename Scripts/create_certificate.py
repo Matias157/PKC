@@ -35,7 +35,7 @@ class CreateCertificate(object):
         try:
             greeting_transaction = (
                 public_key_chain_factory.functions.createPublicKeyChainContract(
-                    url, pub_key.encode("utf-8")
+                    url, pub_key.encode()
                 ).buildTransaction(
                     {
                         "chainId": self.chain_id,
@@ -54,6 +54,6 @@ class CreateCertificate(object):
             )
 
             tx_receipt = self.w3.eth.wait_for_transaction_receipt(tx_greeting_hash)
+            return [True]
         except Exception as e:
-            print(e)
-            return False
+            return [False, e]

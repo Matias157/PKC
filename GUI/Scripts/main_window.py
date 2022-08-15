@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '../UIs/main_window.ui'
+# Form implementation generated from reading ui file 'GUI/UIs/main_window.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
@@ -9,11 +9,12 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from GUI.Scripts.sign_window import Ui_signinsignup_window
+from GUI.Scripts.create_certificate_window import Ui_create_certificate_window
+from GUI.Scripts.verify_window import Ui_verify_window
 
 
 class Ui_main_window(object):
-    def setupUi(self, main_window):
+    def setupUi(self, main_window, login_window, login_data):
         main_window.setObjectName("main_window")
         main_window.resize(800, 600)
         self.centralwidget = QtWidgets.QWidget(main_window)
@@ -22,52 +23,69 @@ class Ui_main_window(object):
         self.pushButton.setGeometry(QtCore.QRect(60, 360, 150, 50))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(
-            lambda: self.createSignWindow(main_window, "create")
+            lambda: self.createCreateCertificateWindow(main_window, login_data)
         )
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(220, 30, 371, 41))
+        self.label.setGeometry(QtCore.QRect(10, 10, 471, 21))
         font = QtGui.QFont()
-        font.setPointSize(36)
+        font.setPointSize(12)
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_2.setGeometry(QtCore.QRect(330, 360, 150, 50))
         self.pushButton_2.setObjectName("pushButton_2")
         self.pushButton_2.clicked.connect(
-            lambda: self.createSignWindow(main_window, "verify")
+            lambda: self.createVerifyCertificateWindow(main_window, login_data)
         )
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(590, 360, 150, 50))
         self.pushButton_3.setObjectName("pushButton_3")
-        self.pushButton_3.clicked.connect(
-            lambda: self.createSignWindow(main_window, "vote")
-        )
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(260, 230, 301, 31))
+        self.label_2.setGeometry(QtCore.QRect(140, 50, 531, 51))
         font = QtGui.QFont()
-        font.setPointSize(20)
+        font.setPointSize(36)
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
+        self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_4.setGeometry(QtCore.QRect(330, 520, 150, 50))
+        self.pushButton_4.setObjectName("pushButton_4")
+        self.pushButton_4.clicked.connect(
+            lambda: self.logout(main_window, login_window)
+        )
         main_window.setCentralWidget(self.centralwidget)
 
-        self.retranslateUi(main_window)
+        self.retranslateUi(main_window, login_data)
         QtCore.QMetaObject.connectSlotsByName(main_window)
 
-    def retranslateUi(self, main_window):
+    def retranslateUi(self, main_window, login_data):
         _translate = QtCore.QCoreApplication.translate
         main_window.setWindowTitle(_translate("main_window", "MainWindow"))
         self.pushButton.setText(_translate("main_window", "Create Certificate"))
-        self.label.setText(_translate("main_window", "Welcome to PKC!"))
+        self.label.setText(
+            _translate("main_window", "Welcome " + login_data.session.address)
+        )
         self.pushButton_2.setText(_translate("main_window", "Verify Certificate"))
         self.pushButton_3.setText(_translate("main_window", "Validate Certificate"))
         self.label_2.setText(_translate("main_window", "What do you want to do?"))
+        self.pushButton_4.setText(_translate("main_window", "Logout"))
 
-    def createSignWindow(self, main_window, type):
+    def createCreateCertificateWindow(self, main_window, login_data):
         main_window.hide()
-        self.sign_window = QtWidgets.QWidget()
-        self.ui = Ui_signinsignup_window()
-        self.ui.setupUi(self.sign_window, main_window, type)
-        self.sign_window.show()
+        self.create_certificate_window = QtWidgets.QWidget()
+        self.ui = Ui_create_certificate_window()
+        self.ui.setupUi(self.create_certificate_window, main_window, login_data)
+        self.create_certificate_window.show()
+
+    def createVerifyCertificateWindow(self, main_window, login_data):
+        main_window.hide()
+        self.verify_window = QtWidgets.QWidget()
+        self.ui = Ui_verify_window()
+        self.ui.setupUi(self.verify_window, main_window, login_data)
+        self.verify_window.show()
+
+    def logout(self, main_window, login_window):
+        login_window.show()
+        main_window.close()
 
 
 if __name__ == "__main__":

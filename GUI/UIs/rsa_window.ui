@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>rsa_window</class>
+ <widget class="QWidget" name="rsa_window">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>523</width>
+    <height>264</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>RSA Private Key</string>
+  </property>
+  <widget class="QLabel" name="create_title">
+   <property name="geometry">
+    <rect>
+     <x>90</x>
+     <y>10</y>
+     <width>341</width>
+     <height>61</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>36</pointsize>
+    </font>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
+   <property name="text">
+    <string>RSA Private Key</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="rsa_label_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>100</y>
+     <width>91</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Key password</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="rsa_line_1">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>130</y>
+     <width>501</width>
+     <height>31</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="rsa_button_1">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>220</y>
+     <width>100</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Generate</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="rsa_button_2">
+   <property name="geometry">
+    <rect>
+     <x>370</x>
+     <y>220</y>
+     <width>100</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Cancel</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

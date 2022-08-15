@@ -29,9 +29,9 @@
   <widget class="QLabel" name="sign_title">
    <property name="geometry">
     <rect>
-     <x>90</x>
+     <x>80</x>
      <y>10</y>
-     <width>331</width>
+     <width>371</width>
      <height>61</height>
     </rect>
    </property>
@@ -41,7 +41,7 @@
     </font>
    </property>
    <property name="text">
-    <string>Sign In/Sign Up</string>
+    <string>Welcome to PKC!</string>
    </property>
   </widget>
   <widget class="QPushButton" name="sign_button_2">
@@ -67,7 +67,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Cancel</string>
+    <string>Quit</string>
    </property>
   </widget>
  </widget>

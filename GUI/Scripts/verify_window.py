@@ -17,7 +17,7 @@ from Scripts.verify import Verify
 
 
 class Ui_verify_window(object):
-    def setupUi(self, verify_window, login_window):
+    def setupUi(self, verify_window, main_window, login_data):
         verify_window.setObjectName("verify_window")
         verify_window.resize(520, 217)
         self.verify_title = QtWidgets.QLabel(verify_window)
@@ -36,12 +36,12 @@ class Ui_verify_window(object):
         self.verify_button_1 = QtWidgets.QPushButton(verify_window)
         self.verify_button_1.setGeometry(QtCore.QRect(110, 170, 100, 31))
         self.verify_button_1.setObjectName("verify_button_1")
-        self.verify_button_1.clicked.connect(lambda: self.verify(login_window))
+        self.verify_button_1.clicked.connect(lambda: self.verify(login_data))
         self.verify_button_2 = QtWidgets.QPushButton(verify_window)
         self.verify_button_2.setGeometry(QtCore.QRect(310, 170, 100, 31))
         self.verify_button_2.setObjectName("verify_button_2")
         self.verify_button_2.clicked.connect(
-            lambda: self.cancel(verify_window, login_window)
+            lambda: self.cancel(verify_window, main_window)
         )
         self.worker = Worker()
         self.worker.finished.connect(lambda: self.pop_up.close())
@@ -60,8 +60,8 @@ class Ui_verify_window(object):
         self.verify_button_1.setText(_translate("verify_window", "Search"))
         self.verify_button_2.setText(_translate("verify_window", "Cancel"))
 
-    def verify(self, login_window):
-        self.worker.args(login_window, self.verify_line_1.text())
+    def verify(self, login_data):
+        self.worker.args(login_data, self.verify_line_1.text())
         self.showPopUp()
         self.worker.start()
 
@@ -87,8 +87,8 @@ class Ui_verify_window(object):
             msg.setStandardButtons(QMessageBox.Ok)
             x = msg.exec_()
 
-    def cancel(self, verify_window, login_window):
-        login_window.show()
+    def cancel(self, verify_window, main_window):
+        main_window.show()
         verify_window.close()
 
 
@@ -100,8 +100,8 @@ class Worker(QThread):
         out = self.verify.verify(self.url)
         self.worker_complete.emit(out)
 
-    def args(self, login_window, url):
-        self.verify = Verify(login_window.session.endpoint)
+    def args(self, login_data, url):
+        self.verify = Verify(login_data.session.endpoint)
         self.url = url
 
 

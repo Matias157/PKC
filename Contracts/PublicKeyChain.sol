@@ -6,7 +6,7 @@ contract PublicKeyChain {
     address private deployer;
     string private url;
     bool private isRovoked;
-    bytes private pubKey;
+    bytes private x509;
 
     address[] private votes;
     uint256 private votesCount;
@@ -25,14 +25,21 @@ contract PublicKeyChain {
     constructor(
         address _deployer,
         string memory _url,
-        bytes memory _pubKey
+        bytes memory _x509,
+        string[] memory attrs,
+        uint256 attrsLen
     ) {
         deployer = _deployer;
         url = _url;
-        pubKey = _pubKey;
+        x509 = _x509;
         votesCount = 0;
         attributesLen = 0;
         isRovoked = false;
+        if (attrsLen > 0) {
+            for (uint256 i = 0; i < attrsLen; i += 2) {
+                addAttribute(attrs[i], attrs[i + 1]);
+            }
+        }
     }
 
     function addAttribute(string memory _attributeName, string memory _data)
@@ -71,13 +78,13 @@ contract PublicKeyChain {
         )
     {
         string[] memory attr = new string[](attributesLen);
-        for (uint256 i = 0; i < attributesLen; i++) {
+        for (uint256 i = 0; i < attributesLen; i += 1) {
             attr[i] = string.concat(
                 string.concat(attributes[i].attributeName, ": "),
                 attributes[i].data
             );
         }
-        return (deployer, url, attr, pubKey, isRovoked, votesCount);
+        return (deployer, url, attr, x509, isRovoked, votesCount);
     }
 
     function vote(address voter) public {

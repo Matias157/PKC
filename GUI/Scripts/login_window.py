@@ -10,12 +10,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from Scripts.login import Login
-from GUI.Scripts.verify_window import Ui_verify_window
-from GUI.Scripts.create_certificate_window import Ui_create_certificate_window
+from GUI.Scripts.main_window import Ui_main_window
 
 
 class Ui_login_window(object):
-    def setupUi(self, login_window, signinsignup_window, type):
+    def setupUi(self, login_window, signinsignup_window):
         login_window.setObjectName("login_window")
         login_window.resize(527, 264)
         self.login_line_2 = QtWidgets.QLineEdit(login_window)
@@ -34,7 +33,7 @@ class Ui_login_window(object):
         self.login_button_1 = QtWidgets.QPushButton(login_window)
         self.login_button_1.setGeometry(QtCore.QRect(110, 220, 100, 31))
         self.login_button_1.setObjectName("login_button_1")
-        self.login_button_1.clicked.connect(lambda: self.login(login_window, type))
+        self.login_button_1.clicked.connect(lambda: self.login(login_window))
         self.login_button_2 = QtWidgets.QPushButton(login_window)
         self.login_button_2.setGeometry(QtCore.QRect(310, 220, 100, 31))
         self.login_button_2.setObjectName("login_button_2")
@@ -53,22 +52,14 @@ class Ui_login_window(object):
         self.login_button_1.setText(_translate("login_window", "Login"))
         self.login_button_2.setText(_translate("login_window", "Cancel"))
 
-    def login(self, login_window, type):
+    def login(self, login_window):
         self.session = Login(self.login_line_1.text(), self.login_line_2.text())
         if self.session.login():
             login_window.hide()
-            if type == "create":
-                self.create_certificate_window = QtWidgets.QWidget()
-                self.ui = Ui_create_certificate_window()
-                self.ui.setupUi(self.create_certificate_window, self)
-                self.create_certificate_window.show()
-            elif type == "verify":
-                self.verify_window = QtWidgets.QWidget()
-                self.ui = Ui_verify_window()
-                self.ui.setupUi(self.verify_window, self)
-                self.verify_window.show()
-            else:
-                pass
+            main_window = QtWidgets.QMainWindow()
+            ui = Ui_main_window()
+            ui.setupUi(main_window, login_window, self)
+            main_window.show()
         else:
             print("Login Failed!")
 
