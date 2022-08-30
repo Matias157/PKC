@@ -22,6 +22,13 @@ class CreateAccount(object):
                 )
                 databasewriter.writerow([self.address, self.endpoint, self.password])
             os.mkdir("Data/UserData/" + self.address)
+            with open(
+                "Data/UserData/" + self.address + "/TrustedList.csv", "w"
+            ) as file:
+                databasewriter = csv.writer(
+                    file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+                )
+                databasewriter.writerow(["address"])
             return True
         else:
             return False

@@ -17,6 +17,7 @@ class Ui_signinsignup_window(object):
     def setupUi(self, signinsignup_window):
         signinsignup_window.setObjectName("signinsignup_window")
         signinsignup_window.resize(524, 264)
+        signinsignup_window.setFixedSize(524, 264)
         self.sign_button_1 = QtWidgets.QPushButton(signinsignup_window)
         self.sign_button_1.setGeometry(QtCore.QRect(50, 140, 131, 31))
         self.sign_button_1.setObjectName("sign_button_1")

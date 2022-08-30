@@ -9,15 +9,25 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from GUI.Scripts.rsa_window import Ui_rsa_window
+from Scripts.generate_certificate import GenerateCertificate
 
 
 class Ui_x509_window(object):
-    def setupUi(self, x509_window, create_certificate_window):
+    def setupUi(self, x509_window, create_certificate_window, login_data):
         x509_window.setObjectName("x509_window")
         x509_window.resize(619, 794)
+        x509_window.setFixedSize(619, 794)
         self.tableWidget = QtWidgets.QTableWidget(x509_window)
         self.tableWidget.setGeometry(QtCore.QRect(10, 530, 591, 192))
         self.tableWidget.setObjectName("tableWidget")
+        self.tableWidget.setHorizontalScrollMode(
+            QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel
+        )
+        self.tableWidget.setVerticalScrollMode(
+            QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel
+        )
         self.tableWidget.setColumnCount(1)
         self.tableWidget.setRowCount(23)
         item = QtWidgets.QTableWidgetItem()
@@ -74,6 +84,7 @@ class Ui_x509_window(object):
         self.x509_button_3 = QtWidgets.QPushButton(x509_window)
         self.x509_button_3.setGeometry(QtCore.QRect(500, 350, 100, 31))
         self.x509_button_3.setObjectName("x509_button_3")
+        self.x509_button_3.clicked.connect(lambda: self.browseFiles(x509_window))
         self.x509_label_1_1 = QtWidgets.QLabel(x509_window)
         self.x509_label_1_1.setGeometry(QtCore.QRect(10, 230, 171, 19))
         font = QtGui.QFont()
@@ -86,6 +97,9 @@ class Ui_x509_window(object):
         self.x509_button_4 = QtWidgets.QPushButton(x509_window)
         self.x509_button_4.setGeometry(QtCore.QRect(10, 260, 100, 31))
         self.x509_button_4.setObjectName("x509_button_4")
+        self.x509_button_4.clicked.connect(
+            lambda: self.createRSAWindow(x509_window, login_data)
+        )
         self.x509_label_1_2 = QtWidgets.QLabel(x509_window)
         self.x509_label_1_2.setGeometry(QtCore.QRect(10, 320, 121, 19))
         font = QtGui.QFont()
@@ -111,9 +125,13 @@ class Ui_x509_window(object):
         self.x509_button_1 = QtWidgets.QPushButton(x509_window)
         self.x509_button_1.setGeometry(QtCore.QRect(110, 750, 100, 31))
         self.x509_button_1.setObjectName("x509_button_1")
+        self.x509_button_1.clicked.connect(
+            lambda: self.create(x509_window, create_certificate_window, login_data)
+        )
         self.x509_line_2 = QtWidgets.QLineEdit(x509_window)
         self.x509_line_2.setGeometry(QtCore.QRect(10, 440, 601, 31))
         self.x509_line_2.setObjectName("x509_line_2")
+        self.x509_line_2.setEchoMode(QtWidgets.QLineEdit.Password)
         self.x509_label_1_3 = QtWidgets.QLabel(x509_window)
         self.x509_label_1_3.setGeometry(QtCore.QRect(10, 410, 171, 19))
         font = QtGui.QFont()
@@ -196,6 +214,90 @@ class Ui_x509_window(object):
             _translate("x509_window", "PEM file password (not stored)")
         )
         self.x509_label_3.setText(_translate("x509_window", "URL"))
+
+    def browseFiles(self, x509_window):
+        fname = QFileDialog.getOpenFileName(x509_window, "Open file", ".")
+        self.x509_line_3.setText(fname[0])
+
+    def create(self, x509_window, create_certificate_window, login_data):
+        self.generate_certificate = GenerateCertificate()
+        try:
+            attrbs = []
+            for i in range(23):
+                if self.tableWidget.item(i, 0) is not None:
+                    attrbs.append(self.tableWidget.item(i, 0).text())
+                else:
+                    attrbs.append("")
+            dir = self.generate_certificate.generate_certificate(
+                self.x509_line_2.text(),
+                login_data.session.address,
+                self.x509_line_3.text(),
+                self.x509_line_1.text(),
+                attrbs[0],
+                attrbs[1],
+                attrbs[2],
+                attrbs[3],
+                attrbs[4],
+                attrbs[5],
+                attrbs[6],
+                attrbs[7],
+                attrbs[8],
+                attrbs[9],
+                attrbs[10],
+                attrbs[11],
+                attrbs[12],
+                attrbs[13],
+                attrbs[14],
+                attrbs[15],
+                attrbs[16],
+                attrbs[17],
+                attrbs[18],
+                attrbs[19],
+                attrbs[20],
+                attrbs[21],
+                attrbs[22],
+            )
+            self.showMsgBox(
+                x509_window,
+                create_certificate_window,
+                "Completion",
+                "Certificate created!",
+                "Your Certificate was saved to " + str(dir),
+                False,
+            )
+        except Exception as e:
+            self.showMsgBox(
+                x509_window,
+                create_certificate_window,
+                "Error",
+                "An error has occurred!",
+                str(e),
+                True,
+            )
+
+    def createRSAWindow(self, x509_window, login_data):
+        x509_window.hide()
+        self.rsa_window = QtWidgets.QWidget()
+        self.ui = Ui_rsa_window()
+        self.ui.setupUi(self.rsa_window, x509_window, login_data)
+        self.rsa_window.show()
+
+    def showMsgBox(
+        self, x509_window, create_certificate_window, title, text, inform, err
+    ):
+        msg = QMessageBox()
+        msg.setWindowTitle(title)
+        msg.setText(text)
+        msg.setInformativeText(inform)
+        if err:
+            msg.setIcon(QMessageBox.Critical)
+        else:
+            msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.buttonClicked.connect(
+            lambda: self.cancel(x509_window, create_certificate_window)
+        )
+        x = msg.exec_()
 
     def cancel(self, x509_window, create_certificate_window):
         create_certificate_window.show()

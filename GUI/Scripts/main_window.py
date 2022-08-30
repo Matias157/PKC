@@ -17,10 +17,11 @@ class Ui_main_window(object):
     def setupUi(self, main_window, login_window, login_data):
         main_window.setObjectName("main_window")
         main_window.resize(800, 600)
+        main_window.setFixedSize(800, 600)
         self.centralwidget = QtWidgets.QWidget(main_window)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(60, 360, 150, 50))
+        self.pushButton.setGeometry(QtCore.QRect(150, 360, 221, 50))
         self.pushButton.setObjectName("pushButton")
         self.pushButton.clicked.connect(
             lambda: self.createCreateCertificateWindow(main_window, login_data)
@@ -32,14 +33,14 @@ class Ui_main_window(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(330, 360, 150, 50))
+        self.pushButton_2.setGeometry(QtCore.QRect(150, 540, 131, 31))
         self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_2.clicked.connect(
+        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_3.setGeometry(QtCore.QRect(440, 360, 221, 50))
+        self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(
             lambda: self.createVerifyCertificateWindow(main_window, login_data)
         )
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(590, 360, 150, 50))
-        self.pushButton_3.setObjectName("pushButton_3")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
         self.label_2.setGeometry(QtCore.QRect(140, 50, 531, 51))
         font = QtGui.QFont()
@@ -47,11 +48,17 @@ class Ui_main_window(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_4.setGeometry(QtCore.QRect(330, 520, 150, 50))
+        self.pushButton_4.setGeometry(QtCore.QRect(330, 540, 141, 31))
         self.pushButton_4.setObjectName("pushButton_4")
         self.pushButton_4.clicked.connect(
             lambda: self.logout(main_window, login_window)
         )
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        self.pushButton_5 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_5.setFont(font)
+        self.pushButton_5.setGeometry(QtCore.QRect(520, 540, 131, 31))
+        self.pushButton_5.setObjectName("pushButton_5")
         main_window.setCentralWidget(self.centralwidget)
 
         self.retranslateUi(main_window, login_data)
@@ -64,10 +71,11 @@ class Ui_main_window(object):
         self.label.setText(
             _translate("main_window", "Welcome " + login_data.session.address)
         )
-        self.pushButton_2.setText(_translate("main_window", "Verify Certificate"))
-        self.pushButton_3.setText(_translate("main_window", "Validate Certificate"))
+        self.pushButton_2.setText(_translate("main_window", "Revoke Certificate"))
+        self.pushButton_3.setText(_translate("main_window", "Browse Certificates"))
         self.label_2.setText(_translate("main_window", "What do you want to do?"))
         self.pushButton_4.setText(_translate("main_window", "Logout"))
+        self.pushButton_5.setText(_translate("main_window", "Update from Trusted List"))
 
     def createCreateCertificateWindow(self, main_window, login_data):
         main_window.hide()

@@ -20,8 +20,9 @@ class Ui_verify_window(object):
     def setupUi(self, verify_window, main_window, login_data):
         verify_window.setObjectName("verify_window")
         verify_window.resize(520, 217)
+        verify_window.setFixedSize(520, 217)
         self.verify_title = QtWidgets.QLabel(verify_window)
-        self.verify_title.setGeometry(QtCore.QRect(90, 10, 361, 61))
+        self.verify_title.setGeometry(QtCore.QRect(60, 10, 401, 61))
         font = QtGui.QFont()
         font.setPointSize(36)
         self.verify_title.setFont(font)
@@ -46,7 +47,7 @@ class Ui_verify_window(object):
         self.worker = Worker()
         self.worker.finished.connect(lambda: self.pop_up.close())
         self.worker.worker_complete.connect(
-            lambda x: self.createResultsWindow(x, verify_window)
+            lambda x: self.createResultsWindow(x, verify_window, login_data)
         )
 
         self.retranslateUi(verify_window)
@@ -54,8 +55,8 @@ class Ui_verify_window(object):
 
     def retranslateUi(self, verify_window):
         _translate = QtCore.QCoreApplication.translate
-        verify_window.setWindowTitle(_translate("verify_window", "Verify"))
-        self.verify_title.setText(_translate("verify_window", "Verify Certificate"))
+        verify_window.setWindowTitle(_translate("verify_window", "Browse"))
+        self.verify_title.setText(_translate("verify_window", "Browse Certificate"))
         self.verify_label_1.setText(_translate("verify_window", "URL"))
         self.verify_button_1.setText(_translate("verify_window", "Search"))
         self.verify_button_2.setText(_translate("verify_window", "Cancel"))
@@ -68,15 +69,15 @@ class Ui_verify_window(object):
     def showPopUp(self):
         self.pop_up = QtWidgets.QDialog()
         ui = Ui_dialog()
-        ui.setupUi(self.pop_up, "Verifing Certificate", "Searching...")
+        ui.setupUi(self.pop_up, "Searching Certificate", "Searching...")
         self.pop_up.show()
 
-    def createResultsWindow(self, out, verify_window):
+    def createResultsWindow(self, out, verify_window, login_data):
         if out[0] != False:
             verify_window.hide()
             verify_results_window = QtWidgets.QWidget()
             ui = Ui_verify_results_window()
-            ui.setupUi(verify_results_window, verify_window, out)
+            ui.setupUi(verify_results_window, verify_window, login_data, out)
             verify_results_window.show()
         else:
             msg = QMessageBox()

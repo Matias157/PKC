@@ -22,7 +22,7 @@ class Verify(object):
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         public_key_chain_factory = self.w3.eth.contract(
-            address="0x75C228fa348198A5626bB624f5D81914AC8377A6",
+            address="0x5756EcDa3B442B1aA90e90bdD8E6D916Bb15CB63",
             abi=self.abi,
             bytecode=self.bytecode,
         )
@@ -42,4 +42,5 @@ class Verify(object):
             except Exception as e:
                 return [False, e]
             output.append(stored_value)
+
         return output

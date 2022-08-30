@@ -12,6 +12,9 @@ contract PublicKeyChain {
     uint256 private votesCount;
     mapping(address => bool) voterExists;
 
+    address[] private votedAddresses;
+    mapping(address => bool) addressVoted;
+
     Attribute[] private attributes;
     uint256 private attributesLen;
     mapping(string => uint256) nameToIndex;
@@ -45,6 +48,7 @@ contract PublicKeyChain {
     function addAttribute(string memory _attributeName, string memory _data)
         public
     {
+        if (isRovoked) revert("This Certificate is revoked!");
         if (attributeExists[_attributeName])
             revert("An Attribute with the same name already exists!");
         nameToIndex[_attributeName] = attributesLen;
@@ -53,16 +57,28 @@ contract PublicKeyChain {
         attributesLen += 1;
     }
 
+    function getRevokedState() public view returns (bool) {
+        return isRovoked;
+    }
+
     function getDeployer() public view returns (address) {
+        if (isRovoked) revert("This Certificate is revoked!");
         return deployer;
     }
 
     function getUrl() public view returns (string memory) {
+        if (isRovoked) revert("This Certificate is revoked!");
         return url;
     }
 
     function getVotes() public view returns (uint256) {
+        if (isRovoked) revert("This Certificate is revoked!");
         return votesCount;
+    }
+
+    function getVotedList() public view returns (address[] memory) {
+        if (isRovoked) revert("This Certificate is revoked!");
+        return votedAddresses;
     }
 
     function getAllInfo()
@@ -77,6 +93,7 @@ contract PublicKeyChain {
             uint256
         )
     {
+        if (isRovoked) revert("This Certificate is revoked!");
         string[] memory attr = new string[](attributesLen);
         for (uint256 i = 0; i < attributesLen; i += 1) {
             attr[i] = string.concat(
@@ -88,10 +105,24 @@ contract PublicKeyChain {
     }
 
     function vote(address voter) public {
+        if (isRovoked) revert("This Certificate is revoked!");
         if (voterExists[voter])
             revert("You already validated this Certificate!");
         voterExists[voter] = true;
         votes.push(voter);
         votesCount += 1;
+    }
+
+    function voted(address addrs) public {
+        if (isRovoked) revert("This Certificate is revoked!");
+        if (addressVoted[addrs])
+            revert("This Certificate already exists in the voted list!");
+        addressVoted[addrs] = true;
+        votedAddresses.push(addrs);
+    }
+
+    function revoke() public {
+        if (isRovoked) revert("This Certificate is already revoked!");
+        isRovoked = true;
     }
 }

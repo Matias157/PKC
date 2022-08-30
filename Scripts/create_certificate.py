@@ -23,11 +23,11 @@ class CreateCertificate(object):
         self.private_key = priv_key
         self.nonce = self.w3.eth.getTransactionCount(self.address)
 
-    def create_certificate(self, pub_key, url):
+    def create_certificate(self, x509, url, attributes):
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         public_key_chain_factory = self.w3.eth.contract(
-            address="0x75C228fa348198A5626bB624f5D81914AC8377A6",
+            address="0x5756EcDa3B442B1aA90e90bdD8E6D916Bb15CB63",
             abi=self.abi,
             bytecode=self.bytecode,
         )
@@ -35,7 +35,7 @@ class CreateCertificate(object):
         try:
             greeting_transaction = (
                 public_key_chain_factory.functions.createPublicKeyChainContract(
-                    url, pub_key.encode()
+                    url, x509, attributes, len(attributes)
                 ).buildTransaction(
                     {
                         "chainId": self.chain_id,

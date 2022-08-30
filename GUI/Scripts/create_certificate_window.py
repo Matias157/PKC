@@ -11,6 +11,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization
 from GUI.Scripts.x509_window import Ui_x509_window
 from GUI.Scripts.dialog import Ui_dialog
 from Scripts.create_certificate import CreateCertificate
@@ -20,6 +22,7 @@ class Ui_create_certificate_window(object):
     def setupUi(self, create_certificate_window, main_window, login_data):
         create_certificate_window.setObjectName("create_certificate_window")
         create_certificate_window.resize(623, 464)
+        create_certificate_window.setFixedSize(623, 464)
         self.create_title = QtWidgets.QLabel(create_certificate_window)
         self.create_title.setGeometry(QtCore.QRect(120, 10, 381, 61))
         font = QtGui.QFont()
@@ -45,6 +48,7 @@ class Ui_create_certificate_window(object):
         self.createcertif_line_2 = QtWidgets.QLineEdit(create_certificate_window)
         self.createcertif_line_2.setGeometry(QtCore.QRect(10, 350, 601, 31))
         self.createcertif_line_2.setObjectName("createcertif_line_2")
+        self.createcertif_line_2.setEchoMode(QtWidgets.QLineEdit.Password)
         self.createcertif_label_3 = QtWidgets.QLabel(create_certificate_window)
         self.createcertif_label_3.setGeometry(QtCore.QRect(10, 320, 211, 19))
         self.createcertif_label_3.setObjectName("createcertif_label_3")
@@ -67,7 +71,7 @@ class Ui_create_certificate_window(object):
         self.createcertif_button_4.setGeometry(QtCore.QRect(10, 150, 100, 31))
         self.createcertif_button_4.setObjectName("createcertif_button_4")
         self.createcertif_button_4.clicked.connect(
-            lambda: self.createX509Window(create_certificate_window)
+            lambda: self.createX509Window(create_certificate_window, login_data)
         )
         self.createcertif_label_5 = QtWidgets.QLabel(create_certificate_window)
         self.createcertif_label_5.setGeometry(QtCore.QRect(10, 120, 131, 19))
@@ -118,24 +122,34 @@ class Ui_create_certificate_window(object):
         )
 
     def browseFiles(self, create_certificate_window):
-        fname = QFileDialog.getOpenFileName(
-            create_certificate_window, "Open file", "/home"
-        )
+        fname = QFileDialog.getOpenFileName(create_certificate_window, "Open file", ".")
         self.createcertif_line_3.setText(fname[0])
 
-    def createX509Window(self, create_certificate_window):
+    def createX509Window(self, create_certificate_window, login_data):
         create_certificate_window.hide()
         self.x509_window = QtWidgets.QWidget()
         self.ui = Ui_x509_window()
-        self.ui.setupUi(self.x509_window, create_certificate_window)
+        self.ui.setupUi(self.x509_window, create_certificate_window, login_data)
         self.x509_window.show()
 
     def createCertificate(self, login_data):
+        attrList = []
+        url = ""
+        with open(self.createcertif_line_3.text(), "rb") as f:
+            cert = x509.load_pem_x509_certificate(f.read())
+        for attribute in cert.subject:
+            if str(attribute.oid._name) != "commonName":
+                attrList.append(str(attribute.oid._name))
+                attrList.append(str(attribute.value))
+            else:
+                url = str(attribute.value)
+
         self.worker.args(
             login_data,
             self.createcertif_line_2.text(),
-            self.createcertif_line_1.text(),
-            self.createcertif_textEdit_1.toPlainText(),
+            url,
+            cert.public_bytes(serialization.Encoding.PEM),
+            attrList,
         )
         self.showPopUp()
         self.worker.start()
@@ -177,17 +191,18 @@ class Worker(QThread):
 
     def run(self):
         # time.sleep(5)
-        out = self.cert.create_certificate(self.pub_key, self.url)
+        out = self.cert.create_certificate(self.x509, self.url, self.attributes)
         self.worker_complete.emit(out)
 
-    def args(self, login_data, priv_key, url, pub_key):
+    def args(self, login_data, priv_key, url, x509, attributes):
         self.cert = CreateCertificate(
             login_data.session.address,
             login_data.session.endpoint,
             priv_key,
         )
         self.url = url
-        self.pub_key = pub_key
+        self.x509 = x509
+        self.attributes = attributes
 
 
 if __name__ == "__main__":

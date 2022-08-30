@@ -17,6 +17,7 @@ class Ui_create_window(object):
     def setupUi(self, create_window, signinsignup_window):
         create_window.setObjectName("create_window")
         create_window.resize(518, 593)
+        create_window.setFixedSize(518, 593)
         self.create_title = QtWidgets.QLabel(create_window)
         self.create_title.setGeometry(QtCore.QRect(90, 10, 331, 61))
         font = QtGui.QFont()

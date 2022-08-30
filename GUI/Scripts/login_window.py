@@ -17,6 +17,7 @@ class Ui_login_window(object):
     def setupUi(self, login_window, signinsignup_window):
         login_window.setObjectName("login_window")
         login_window.resize(527, 264)
+        login_window.setFixedSize(527, 264)
         self.login_line_2 = QtWidgets.QLineEdit(login_window)
         self.login_line_2.setGeometry(QtCore.QRect(20, 150, 481, 31))
         self.login_line_2.setObjectName("login_line_2")

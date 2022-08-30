@@ -9,12 +9,15 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
+from Scripts.gererate_keys import GenerateKeys
 
 
 class Ui_rsa_window(object):
-    def setupUi(self, rsa_window):
+    def setupUi(self, rsa_window, x509_window, login_data):
         rsa_window.setObjectName("rsa_window")
         rsa_window.resize(523, 264)
+        rsa_window.setFixedSize(523, 264)
         self.create_title = QtWidgets.QLabel(rsa_window)
         self.create_title.setGeometry(QtCore.QRect(90, 10, 341, 61))
         font = QtGui.QFont()
@@ -28,12 +31,17 @@ class Ui_rsa_window(object):
         self.rsa_line_1 = QtWidgets.QLineEdit(rsa_window)
         self.rsa_line_1.setGeometry(QtCore.QRect(10, 130, 501, 31))
         self.rsa_line_1.setObjectName("rsa_line_1")
+        self.rsa_line_1.setEchoMode(QtWidgets.QLineEdit.Password)
         self.rsa_button_1 = QtWidgets.QPushButton(rsa_window)
         self.rsa_button_1.setGeometry(QtCore.QRect(50, 220, 100, 31))
         self.rsa_button_1.setObjectName("rsa_button_1")
+        self.rsa_button_1.clicked.connect(
+            lambda: self.generate(rsa_window, x509_window, login_data)
+        )
         self.rsa_button_2 = QtWidgets.QPushButton(rsa_window)
         self.rsa_button_2.setGeometry(QtCore.QRect(370, 220, 100, 31))
         self.rsa_button_2.setObjectName("rsa_button_2")
+        self.rsa_button_2.clicked.connect(lambda: self.cancel(rsa_window, x509_window))
 
         self.retranslateUi(rsa_window)
         QtCore.QMetaObject.connectSlotsByName(rsa_window)
@@ -46,9 +54,51 @@ class Ui_rsa_window(object):
         self.rsa_button_1.setText(_translate("rsa_window", "Generate"))
         self.rsa_button_2.setText(_translate("rsa_window", "Cancel"))
 
+    def generate(self, rsa_window, x509_window, login_data):
+        self.generate_keys = GenerateKeys()
+        try:
+            dir = self.generate_keys.generate_keys(
+                self.rsa_line_1.text(), login_data.session.address
+            )
+            self.showMsgBox(
+                rsa_window,
+                x509_window,
+                "Completion",
+                "Key generated!",
+                "Your Private Key was saved to " + str(dir),
+                False,
+            )
+        except Exception as e:
+            self.showMsgBox(
+                rsa_window,
+                x509_window,
+                "Error",
+                "An error has occurred!",
+                str(e),
+                True,
+            )
+
+    def showMsgBox(self, rsa_window, x509_window, title, text, inform, err):
+        msg = QMessageBox()
+        msg.setWindowTitle(title)
+        msg.setText(text)
+        msg.setInformativeText(inform)
+        if err:
+            msg.setIcon(QMessageBox.Critical)
+        else:
+            msg.setIcon(QMessageBox.Information)
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.buttonClicked.connect(lambda: self.cancel(rsa_window, x509_window))
+        x = msg.exec_()
+
+    def cancel(self, rsa_window, x509_window):
+        x509_window.show()
+        rsa_window.close()
+
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     rsa_window = QtWidgets.QWidget()
     ui = Ui_rsa_window()

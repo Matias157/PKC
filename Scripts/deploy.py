@@ -39,7 +39,7 @@ nonce = w3.eth.getTransactionCount(my_address)
 # 2. Sign a transaction
 # 3. Send a transaction
 
-"""PublicKeyChainFactory = w3.eth.contract(abi=abi, bytecode=bytecode)
+PublicKeyChainFactory = w3.eth.contract(abi=abi, bytecode=bytecode)
 transaction = PublicKeyChainFactory.constructor().buildTransaction(
     {
         "chainId": chain_id,
@@ -52,7 +52,7 @@ print("Deploying Contract!")
 tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
 print("Waiting for transaction to finish...")
 tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash)
-print(f"Done! Contract deployed to {tx_receipt.contractAddress}")"""
+print(f"Done! Contract deployed to {tx_receipt.contractAddress}")
 
 
 """for i in range(3):
@@ -125,7 +125,7 @@ for i in range(num):
 print(output)"""
 
 
-stored_value = public_key_chain_factory.functions.fQuery(
+"""stored_value = public_key_chain_factory.functions.fQuery(
     "https://www.google.com.br/"
 ).call()
 print(stored_value)
@@ -139,4 +139,4 @@ for i in range(num):
     ).call()
     output.append(stored_value)
     # print(str(stored_value))
-print(output)
+print(output)"""

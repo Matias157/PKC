@@ -17,14 +17,18 @@ contract PublicKeyChainFactory {
 
     function createPublicKeyChainContract(
         string memory url,
-        bytes memory pubKey
+        bytes memory x509,
+        string[] memory attrs,
+        uint256 attrsLen
     ) public {
         if (addressExists[msg.sender])
             revert("Only one Certificate per Address allowed!");
         PublicKeyChain publicKeyChain = new PublicKeyChain(
             msg.sender,
             url,
-            pubKey
+            x509,
+            attrs,
+            attrsLen
         );
         publicKeyChainArray.push(publicKeyChain);
         addressToIndex[msg.sender] = publicKeyChainArrayLen;
@@ -38,6 +42,11 @@ contract PublicKeyChainFactory {
 
     function fGetDeployer(address deployer) public view returns (address) {
         if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
         return
             PublicKeyChain(
                 address(publicKeyChainArray[addressToIndex[deployer]])
@@ -46,6 +55,11 @@ contract PublicKeyChainFactory {
 
     function fGetUrl(address deployer) public view returns (string memory) {
         if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
         return
             PublicKeyChain(
                 address(publicKeyChainArray[addressToIndex[deployer]])
@@ -54,26 +68,35 @@ contract PublicKeyChainFactory {
 
     function fGetVotes(address deployer) public view returns (uint256) {
         if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
         return
             PublicKeyChain(
                 address(publicKeyChainArray[addressToIndex[deployer]])
             ).getVotes();
     }
 
-    function fAddAttribute(
-        address deployer,
-        string memory attributeName,
-        string memory data
-    ) public {
-        if (!addressExists[deployer]) revert("Certificate could not be found!");
-        PublicKeyChain(address(publicKeyChainArray[addressToIndex[deployer]]))
-            .addAttribute(attributeName, data);
-    }
-
     function fVote(address deployer) public {
         if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
+        if (!addressExists[msg.sender])
+            revert("Create a certificate before voting!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[msg.sender]])
+            ).getRevokedState()
+        ) revert("Your Certificate is revoked!");
         PublicKeyChain(address(publicKeyChainArray[addressToIndex[deployer]]))
             .vote(msg.sender);
+        PublicKeyChain(address(publicKeyChainArray[addressToIndex[msg.sender]]))
+            .voted(deployer);
     }
 
     function fGetAllInfo(address deployer)
@@ -89,6 +112,11 @@ contract PublicKeyChainFactory {
         )
     {
         if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
         return
             PublicKeyChain(
                 address(publicKeyChainArray[addressToIndex[deployer]])
@@ -100,28 +128,40 @@ contract PublicKeyChainFactory {
         uint256 j = 0;
         for (uint256 i = 0; i < publicKeyChainArrayLen; i++) {
             if (
-                keccak256(
-                    bytes(
-                        PublicKeyChain(address(publicKeyChainArray[i])).getUrl()
-                    )
-                ) == keccak256(bytes(url))
+                !PublicKeyChain(address(publicKeyChainArray[i]))
+                    .getRevokedState()
             ) {
-                duplicates += 1;
+                if (
+                    keccak256(
+                        bytes(
+                            PublicKeyChain(address(publicKeyChainArray[i]))
+                                .getUrl()
+                        )
+                    ) == keccak256(bytes(url))
+                ) {
+                    duplicates += 1;
+                }
             }
         }
         if (duplicates <= 0) revert("Certificate could not be found!");
         address[] memory addr = new address[](duplicates);
         for (uint256 i = 0; i < publicKeyChainArrayLen; i++) {
             if (
-                keccak256(
-                    bytes(
-                        PublicKeyChain(address(publicKeyChainArray[i])).getUrl()
-                    )
-                ) == keccak256(bytes(url))
+                !PublicKeyChain(address(publicKeyChainArray[i]))
+                    .getRevokedState()
             ) {
-                addr[j] = PublicKeyChain(address(publicKeyChainArray[i]))
-                    .getDeployer();
-                j += 1;
+                if (
+                    keccak256(
+                        bytes(
+                            PublicKeyChain(address(publicKeyChainArray[i]))
+                                .getUrl()
+                        )
+                    ) == keccak256(bytes(url))
+                ) {
+                    addr[j] = PublicKeyChain(address(publicKeyChainArray[i]))
+                        .getDeployer();
+                    j += 1;
+                }
             }
         }
         return (addr);

@@ -15,6 +15,7 @@ class Ui_dialog(object):
     def setupUi(self, dialog, window_title, window_text):
         dialog.setObjectName("dialog")
         dialog.resize(362, 145)
+        dialog.setFixedSize(362, 145)
         # print(dialog.availableGeometry().center())
         self.label = QtWidgets.QLabel(dialog)
         self.label.setGeometry(QtCore.QRect(90, 50, 181, 41))
