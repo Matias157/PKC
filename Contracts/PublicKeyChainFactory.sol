@@ -40,7 +40,11 @@ contract PublicKeyChainFactory {
         return publicKeyChainArrayLen;
     }
 
-    function fGetDeployer(address deployer) public view returns (address) {
+    function fGetVotedList(address deployer)
+        public
+        view
+        returns (address[] memory)
+    {
         if (!addressExists[deployer]) revert("Certificate could not be found!");
         if (
             PublicKeyChain(
@@ -50,33 +54,7 @@ contract PublicKeyChainFactory {
         return
             PublicKeyChain(
                 address(publicKeyChainArray[addressToIndex[deployer]])
-            ).getDeployer();
-    }
-
-    function fGetUrl(address deployer) public view returns (string memory) {
-        if (!addressExists[deployer]) revert("Certificate could not be found!");
-        if (
-            PublicKeyChain(
-                address(publicKeyChainArray[addressToIndex[deployer]])
-            ).getRevokedState()
-        ) revert("This Certificate is revoked!");
-        return
-            PublicKeyChain(
-                address(publicKeyChainArray[addressToIndex[deployer]])
-            ).getUrl();
-    }
-
-    function fGetVotes(address deployer) public view returns (uint256) {
-        if (!addressExists[deployer]) revert("Certificate could not be found!");
-        if (
-            PublicKeyChain(
-                address(publicKeyChainArray[addressToIndex[deployer]])
-            ).getRevokedState()
-        ) revert("This Certificate is revoked!");
-        return
-            PublicKeyChain(
-                address(publicKeyChainArray[addressToIndex[deployer]])
-            ).getVotes();
+            ).getVotedList();
     }
 
     function fVote(address deployer) public {
@@ -97,6 +75,39 @@ contract PublicKeyChainFactory {
             .vote(msg.sender);
         PublicKeyChain(address(publicKeyChainArray[addressToIndex[msg.sender]]))
             .voted(deployer);
+    }
+
+    function fRemoveVote(address deployer) public {
+        if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
+        if (!addressExists[msg.sender])
+            revert("Create a certificate before voting!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[msg.sender]])
+            ).getRevokedState()
+        ) revert("Your Certificate is revoked!");
+        PublicKeyChain(address(publicKeyChainArray[addressToIndex[deployer]]))
+            .removeVote(msg.sender);
+        PublicKeyChain(address(publicKeyChainArray[addressToIndex[msg.sender]]))
+            .removeVoted(deployer);
+    }
+
+    function fRevoke(address deployer) public {
+        if (deployer != msg.sender)
+            revert("You can only revoke your own certificate!");
+        if (!addressExists[deployer]) revert("Certificate could not be found!");
+        if (
+            PublicKeyChain(
+                address(publicKeyChainArray[addressToIndex[deployer]])
+            ).getRevokedState()
+        ) revert("This Certificate is revoked!");
+        PublicKeyChain(address(publicKeyChainArray[addressToIndex[deployer]]))
+            .revoke();
     }
 
     function fGetAllInfo(address deployer)

@@ -18,7 +18,7 @@ class CreateCertificate(object):
 
         self.w3 = Web3(Web3.HTTPProvider(endpoint))
 
-        self.chain_id = 4
+        self.chain_id = 5
         self.address = address
         self.private_key = priv_key
         self.nonce = self.w3.eth.getTransactionCount(self.address)
@@ -27,7 +27,7 @@ class CreateCertificate(object):
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         public_key_chain_factory = self.w3.eth.contract(
-            address="0x5756EcDa3B442B1aA90e90bdD8E6D916Bb15CB63",
+            address="0xF5e4e5644C60364e4f5c282b548F4404c38fE268",
             abi=self.abi,
             bytecode=self.bytecode,
         )

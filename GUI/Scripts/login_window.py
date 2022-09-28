@@ -9,6 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from Scripts.login import Login
 from GUI.Scripts.main_window import Ui_main_window
 
@@ -57,12 +58,20 @@ class Ui_login_window(object):
         self.session = Login(self.login_line_1.text(), self.login_line_2.text())
         if self.session.login():
             login_window.hide()
+            self.login_line_1.setText("")
+            self.login_line_2.setText("")
             main_window = QtWidgets.QMainWindow()
             ui = Ui_main_window()
             ui.setupUi(main_window, login_window, self)
             main_window.show()
         else:
-            print("Login Failed!")
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Login Failed!")
+            msg.setInformativeText("The username or password is incorrect")
+            msg.setIcon(QMessageBox.Critical)
+            msg.setStandardButtons(QMessageBox.Ok)
+            x = msg.exec_()
 
     def cancel(self, login_window, signinsignup_window):
         signinsignup_window.show()

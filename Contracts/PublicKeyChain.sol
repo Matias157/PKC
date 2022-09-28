@@ -10,9 +10,12 @@ contract PublicKeyChain {
 
     address[] private votes;
     uint256 private votesCount;
+    mapping(address => uint256) voterToIndex;
     mapping(address => bool) voterExists;
 
     address[] private votedAddresses;
+    uint256 private votedCount;
+    mapping(address => uint256) votedToIndex;
     mapping(address => bool) addressVoted;
 
     Attribute[] private attributes;
@@ -36,6 +39,7 @@ contract PublicKeyChain {
         url = _url;
         x509 = _x509;
         votesCount = 0;
+        votedCount = 0;
         attributesLen = 0;
         isRovoked = false;
         if (attrsLen > 0) {
@@ -108,6 +112,7 @@ contract PublicKeyChain {
         if (isRovoked) revert("This Certificate is revoked!");
         if (voterExists[voter])
             revert("You already validated this Certificate!");
+        voterToIndex[voter] = votesCount;
         voterExists[voter] = true;
         votes.push(voter);
         votesCount += 1;
@@ -117,8 +122,38 @@ contract PublicKeyChain {
         if (isRovoked) revert("This Certificate is revoked!");
         if (addressVoted[addrs])
             revert("This Certificate already exists in the voted list!");
+        votedToIndex[addrs] = votedCount;
         addressVoted[addrs] = true;
         votedAddresses.push(addrs);
+        votedCount += 1;
+    }
+
+    function removeVote(address addrs) public {
+        if (isRovoked) revert("This Certificate is revoked!");
+        if (!voterExists[addrs])
+            revert("You haven't validated this Certificate!");
+        votes[voterToIndex[addrs]] = votes[votes.length - 1];
+        voterToIndex[votes[votes.length - 1]] = voterToIndex[addrs];
+        voterToIndex[addrs] = 0;
+        voterExists[addrs] = false;
+        votes.pop();
+        votesCount -= 1;
+    }
+
+    function removeVoted(address addrs) public {
+        if (isRovoked) revert("This Certificate is revoked!");
+        if (!addressVoted[addrs])
+            revert("This certificate haven't been validated by you!");
+        votedAddresses[votedToIndex[addrs]] = votedAddresses[
+            votedAddresses.length - 1
+        ];
+        votedToIndex[votedAddresses[votedAddresses.length - 1]] = votedToIndex[
+            addrs
+        ];
+        votedToIndex[addrs] = 0;
+        addressVoted[addrs] = false;
+        votedAddresses.pop();
+        votedCount -= 1;
     }
 
     function revoke() public {

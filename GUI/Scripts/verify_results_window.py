@@ -11,11 +11,16 @@
 import csv
 import pandas as pd
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
 from GUI.Scripts.details_window import Ui_details_window
+from GUI.Scripts.dialog import Ui_dialog
 from GUI.Scripts.custom_input_window import Ui_custom_input_window
 from Scripts.install_certificate import InstallCertificate
 from Scripts.uninstall_certificate import UninstallCertificate
+from Scripts.vote import Vote
+from Scripts.remove_vote import RemoveVote
+from Scripts.voted_list import VotedList
 
 
 class Ui_verify_results_window(object):
@@ -71,6 +76,9 @@ class Ui_verify_results_window(object):
         self.verifyres_button_1.setGeometry(QtCore.QRect(150, 370, 100, 31))
         self.verifyres_button_1.setObjectName("verifyres_button_3")
         self.verifyres_button_1.hide()
+        self.verifyres_button_1.clicked.connect(
+            lambda: self.validadeCertificate(login_data, data)
+        )
         font = QtGui.QFont()
         font.setPointSize(8)
         self.verifyres_button_4 = QtWidgets.QPushButton(verify_results_window)
@@ -95,6 +103,9 @@ class Ui_verify_results_window(object):
         self.verifyres_button_6.setGeometry(QtCore.QRect(150, 420, 100, 31))
         self.verifyres_button_6.setObjectName("verifyres_button_6")
         self.verifyres_button_6.hide()
+        self.verifyres_button_6.clicked.connect(
+            lambda: self.removeValidation(login_data, data)
+        )
         font = QtGui.QFont()
         font.setPointSize(8)
         self.verifyres_table.itemClicked.connect(lambda: self.showDetailsButton())
@@ -114,7 +125,15 @@ class Ui_verify_results_window(object):
         self.verifyres_button_8.setGeometry(QtCore.QRect(420, 420, 100, 31))
         self.verifyres_button_8.setObjectName("verifyres_button_8")
         self.verifyres_button_8.hide()
+        self.verifyres_button_8.clicked.connect(
+            lambda: self.removeFromTrustedList(login_data, data)
+        )
         self.verifyres_table.itemClicked.connect(lambda: self.showDetailsButton())
+        self.worker = Worker()
+        self.worker.finished.connect(lambda: self.pop_up.close())
+        self.worker.worker_complete.connect(
+            lambda x: self.verifyValidation(x, login_data, data)
+        )
 
         self.retranslateUi(verify_results_window)
         QtCore.QMetaObject.connectSlotsByName(verify_results_window)
@@ -138,20 +157,11 @@ class Ui_verify_results_window(object):
             _translate("verify_results_window", "Add to Trusted List")
         )
         self.verifyres_button_5.setText(_translate("verify_results_window", "Cancel"))
-        self.verifyres_table.horizontalHeaderItem(0).setText(
-            _translate("verify_results_window", "Votes")
-        )
         self.verifyres_button_6.setText(
             _translate("verify_results_window", "Remove Validation")
         )
-        self.verifyres_table.horizontalHeaderItem(0).setText(
-            _translate("verify_results_window", "Votes")
-        )
         self.verifyres_button_7.setText(
             _translate("verify_results_window", "Uninstall Certificate")
-        )
-        self.verifyres_table.horizontalHeaderItem(0).setText(
-            _translate("verify_results_window", "Votes")
         )
         self.verifyres_button_8.setText(
             _translate("verify_results_window", "Remove from Trsuted List")
@@ -251,11 +261,22 @@ class Ui_verify_results_window(object):
                     False,
                 )
 
+    def verifyCertificateInTrustedList(self, address, cert_address):
+        col_list = ["address"]
+        df = pd.read_csv(
+            "Data/UserData/" + address + "/TrustedList.csv",
+            usecols=col_list,
+        )
+        for row in df["address"]:
+            if cert_address == row:
+                return True
+        return False
+
     def addToTrustedList(self, login_data, data):
         returnValue = self.showMsgBox(
             "Information",
             "You are about to add this Certificate to your Trusted List",
-            "Adding a Certificate to your Trsuted List means that you are trusting ALL the Certificates that were (all will be) validate by this one. Want to proceed?",
+            'Adding a Certificate to your Trsuted List means that you are trusting this entry. With this you can use the option "I\'m Feeling Lucky" to make sure that the results of your searches are only from your Trusted List, and if you want, you can also use the option "Update from Trusted List" to install ALL the Certificates validate by this same entry.\nWant to proceed?',
             False,
             True,
         )
@@ -282,7 +303,7 @@ class Ui_verify_results_window(object):
                     self.showMsgBox(
                         "Success",
                         "Added to your Trusted List!",
-                        'To install all the new Certificates go back to the main page and select "Update from Trusted List"',
+                        'If you want to install ALL the new Certificates go back to the main page and select "Update from Trusted List"',
                         False,
                         False,
                     )
@@ -303,16 +324,177 @@ class Ui_verify_results_window(object):
                     False,
                 )
 
-    def verifyCertificateInTrustedList(self, address, cert_address):
-        col_list = ["address"]
-        df = pd.read_csv(
-            "Data/UserData/" + address + "/TrustedList.csv",
-            usecols=col_list,
+    def removeFromTrustedList(self, login_data, data):
+        returnValue = self.showMsgBox(
+            "Information",
+            "You are about to remove this Certificate from your Trusted List",
+            "Removing a Certificate from your Trsuted List means that EVERY Certificate that were validate by this one will be removed (including ones that you may have installed manually).\nWant to proceed?",
+            False,
+            True,
         )
-        for row in df["address"]:
-            if cert_address == row:
-                return True
-        return False
+        if returnValue == QMessageBox.Ok:
+            index = self.verifyres_table.currentRow()
+            if self.verifyCertificateInTrustedList(
+                login_data.session.address, data[index][0]
+            ):
+                try:
+                    self.worker.args("list", login_data, 0, data[index][0])
+                    self.showPopUp("Getting Voted List", "Getting...")
+                    self.worker.start()
+                except Exception as e:
+                    self.showMsgBox(
+                        "Error",
+                        "An error has occurred!",
+                        str(e),
+                        True,
+                        False,
+                    )
+            else:
+                self.showMsgBox(
+                    "Error",
+                    "Certificate not in Trusted List!",
+                    "This Certificate is not in your Trusted List",
+                    True,
+                    False,
+                )
+
+    def showPopUp(self, title, text):
+        self.pop_up = QtWidgets.QDialog()
+        ui = Ui_dialog()
+        ui.setupUi(self.pop_up, title, text)
+        self.pop_up.show()
+
+    def validadeCertificate(self, login_data, data):
+        index = self.verifyres_table.currentRow()
+        input_priv_key = Ui_custom_input_window(
+            "Wallet private key", "Inform your private key (will not be stored)", True
+        )
+        priv_key = input_priv_key.getResults()
+        if priv_key:
+            self.worker.args("vote", login_data, priv_key, data[index][0])
+            self.showPopUp("Validating Certificate", "Validating...")
+            self.worker.start()
+
+    def verifyValidation(self, out, login_data, data):
+        if out[len(out) - 1] == "vote":
+            if out[0]:
+                self.showMsgBox(
+                    "Success",
+                    "Certificate Validated!",
+                    "Certificate was successfuly validated",
+                    False,
+                    False,
+                )
+            else:
+                self.showMsgBox(
+                    "Error",
+                    "An error has occurred!",
+                    str(out[1]),
+                    True,
+                    False,
+                )
+        elif out[len(out) - 1] == "remove":
+            if out[0]:
+                self.showMsgBox(
+                    "Success",
+                    "Validation Removed!",
+                    "Validation was successfuly removed",
+                    False,
+                    False,
+                )
+            else:
+                self.showMsgBox(
+                    "Error",
+                    "An error has occurred!",
+                    str(out[1]),
+                    True,
+                    False,
+                )
+        else:
+            if out[0] != False:
+                index = self.verifyres_table.currentRow()
+                input_passw = Ui_custom_input_window(
+                    "Sudo password",
+                    "Inform your Sudo password (will not be stored)",
+                    True,
+                )
+                passw = input_passw.getResults()
+                if passw:
+                    for addr in out[0]:
+                        rmv = UninstallCertificate(
+                            passw, login_data.session.address, addr
+                        )
+                        remove = rmv.remove_certificate()
+                        err = ""
+                        if remove != True:
+                            err += str(remove) + "\n"
+                    if err == "":
+                        try:
+                            col_list = ["address"]
+                            inp = pd.read_csv(
+                                "Data/UserData/"
+                                + login_data.session.address
+                                + "/TrustedList.csv",
+                                usecols=col_list,
+                            )
+                            with open(
+                                "Data/UserData/"
+                                + login_data.session.address
+                                + "/TrustedList.csv",
+                                "w",
+                            ) as file:
+                                out = csv.writer(
+                                    file,
+                                    delimiter=",",
+                                    quotechar='"',
+                                    quoting=csv.QUOTE_MINIMAL,
+                                )
+                                out.writerow(col_list)
+                                for row in inp["address"]:
+                                    if data[index][0] != row:
+                                        out.writerow(row)
+                            self.showMsgBox(
+                                "Success",
+                                "Removed from your Trusted List!",
+                                "All Certificates validate by this one were removed",
+                                False,
+                                False,
+                            )
+                        except Exception as e:
+                            self.showMsgBox(
+                                "Error",
+                                "An error has occurred!",
+                                str(e),
+                                True,
+                                False,
+                            )
+                    else:
+                        self.showMsgBox(
+                            "Error",
+                            "An error has occurred!",
+                            err,
+                            True,
+                            False,
+                        )
+            else:
+                self.showMsgBox(
+                    "Error",
+                    "An error has occurred!",
+                    str(out[1]),
+                    True,
+                    False,
+                )
+
+    def removeValidation(self, login_data, data):
+        index = self.verifyres_table.currentRow()
+        input_priv_key = Ui_custom_input_window(
+            "Wallet private key", "Inform your private key (will not be stored)", True
+        )
+        priv_key = input_priv_key.getResults()
+        if priv_key:
+            self.worker.args("remove", login_data, priv_key, data[index][0])
+            self.showPopUp("Removing Validation", "Removing...")
+            self.worker.start()
 
     def showMsgBox(self, title, text, inform, err, cancel):
         msg = QMessageBox()
@@ -333,6 +515,36 @@ class Ui_verify_results_window(object):
     def cancel(self, verify_results_window, verify_window):
         verify_window.show()
         verify_results_window.close()
+
+
+class Worker(QThread):
+    worker_complete = pyqtSignal(list)
+
+    def run(self):
+        if self.type == "vote":
+            out = self.vote.vote(self.address)
+            out.append("vote")
+        elif self.type == "remove":
+            out = self.remove.remove_vote(self.address)
+            out.append("remove")
+        else:
+            out = self.list.voted_list(self.address)
+            out.append("list")
+        self.worker_complete.emit(out)
+
+    def args(self, type, login_data, priv_key, address):
+        self.type = type
+        self.address = address
+        if type == "vote":
+            self.vote = Vote(
+                login_data.session.address, login_data.session.endpoint, priv_key
+            )
+        elif type == "remove":
+            self.remove = RemoveVote(
+                login_data.session.address, login_data.session.endpoint, priv_key
+            )
+        else:
+            self.list = VotedList(login_data.session.endpoint)
 
 
 if __name__ == "__main__":

@@ -59,7 +59,7 @@ class Ui_create_certificate_window(object):
         self.createcertif_button_3.setGeometry(QtCore.QRect(500, 240, 100, 31))
         self.createcertif_button_3.setObjectName("createcertif_button_3")
         self.createcertif_button_3.clicked.connect(
-            lambda: self.browseFiles(create_certificate_window)
+            lambda: self.browseFiles(create_certificate_window, login_data)
         )
         self.createcertif_label_4 = QtWidgets.QLabel(create_certificate_window)
         self.createcertif_label_4.setGeometry(QtCore.QRect(10, 210, 131, 19))
@@ -121,8 +121,12 @@ class Ui_create_certificate_window(object):
             _translate("create_certificate_window", "Create a new Certificate")
         )
 
-    def browseFiles(self, create_certificate_window):
-        fname = QFileDialog.getOpenFileName(create_certificate_window, "Open file", ".")
+    def browseFiles(self, create_certificate_window, login_data):
+        fname = QFileDialog.getOpenFileName(
+            create_certificate_window,
+            "Open file",
+            "./Data/UserData/" + login_data.session.address,
+        )
         self.createcertif_line_3.setText(fname[0])
 
     def createX509Window(self, create_certificate_window, login_data):
@@ -135,24 +139,33 @@ class Ui_create_certificate_window(object):
     def createCertificate(self, login_data):
         attrList = []
         url = ""
-        with open(self.createcertif_line_3.text(), "rb") as f:
-            cert = x509.load_pem_x509_certificate(f.read())
-        for attribute in cert.subject:
-            if str(attribute.oid._name) != "commonName":
-                attrList.append(str(attribute.oid._name))
-                attrList.append(str(attribute.value))
-            else:
-                url = str(attribute.value)
+        try:
+            with open(self.createcertif_line_3.text(), "rb") as f:
+                cert = x509.load_pem_x509_certificate(f.read())
+            for attribute in cert.subject:
+                if str(attribute.oid._name) != "commonName":
+                    attrList.append(str(attribute.oid._name))
+                    attrList.append(str(attribute.value))
+                else:
+                    url = str(attribute.value)
 
-        self.worker.args(
-            login_data,
-            self.createcertif_line_2.text(),
-            url,
-            cert.public_bytes(serialization.Encoding.PEM),
-            attrList,
-        )
-        self.showPopUp()
-        self.worker.start()
+            self.worker.args(
+                login_data,
+                self.createcertif_line_2.text(),
+                url,
+                cert.public_bytes(serialization.Encoding.PEM),
+                attrList,
+            )
+            self.showPopUp()
+            self.worker.start()
+        except Exception as e:
+            msg = QMessageBox()
+            msg.setWindowTitle("Error")
+            msg.setText("Error importing Certificate!")
+            msg.setInformativeText(str(e))
+            msg.setIcon(QMessageBox.Critical)
+            msg.setStandardButtons(QMessageBox.Ok)
+            x = msg.exec_()
 
     def showPopUp(self):
         self.pop_up = QtWidgets.QDialog()

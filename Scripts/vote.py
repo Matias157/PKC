@@ -18,7 +18,7 @@ class Vote(object):
 
         self.w3 = Web3(Web3.HTTPProvider(endpoint))
 
-        self.chain_id = 4
+        self.chain_id = 5
         self.address = address
         self.private_key = priv_key
         self.nonce = self.w3.eth.getTransactionCount(self.address)
@@ -27,7 +27,7 @@ class Vote(object):
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         public_key_chain_factory = self.w3.eth.contract(
-            address="0x84d9F8B13887D16641Eb96e92d1fb8B4f4092820",
+            address="0xF5e4e5644C60364e4f5c282b548F4404c38fE268",
             abi=self.abi,
             bytecode=self.bytecode,
         )
@@ -52,6 +52,6 @@ class Vote(object):
             )
 
             tx_receipt = self.w3.eth.wait_for_transaction_receipt(tx_greeting_hash)
+            return [True]
         except Exception as e:
-            print(e)
-            return False
+            return [False, e]

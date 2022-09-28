@@ -134,10 +134,13 @@ class GenerateCertificate(object):
                 x509.SubjectAlternativeName([x509.DNSName(common_name)]),
                 critical=False,
             )
+            .add_extension(
+                x509.BasicConstraints(ca=True, path_length=None),
+                critical=True,
+            )
             .sign(key, hashes.SHA256())
         )
 
-        # print(cert.public_bytes(serialization.Encoding.PEM))
         with open("Data/UserData/" + address + "/certificate.crt", "wb") as f:
             f.write(cert.public_bytes(serialization.Encoding.PEM))
 

@@ -19,10 +19,10 @@ abi = compiled_sol["contracts"]["PublicKeyChainFactory.sol"]["PublicKeyChainFact
 
 # connecting to the chain
 w3 = Web3(
-    Web3.HTTPProvider("https://rinkeby.infura.io/v3/dc9e2171b6064e9b9a577689a90e9355")
+    Web3.HTTPProvider("https://goerli.infura.io/v3/dc9e2171b6064e9b9a577689a90e9355")
 )
 w3.middleware_onion.inject(geth_poa_middleware, layer=0)
-chain_id = 4
+chain_id = 5
 my_address = "0x07A9CF7790300E884C35A97041059e2941B9EaB6"
 private_key = "0xb4a16213105152e39d3286708cef85e47e75736ec5c0db1790a4849b7e8e5471"
 
