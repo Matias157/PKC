@@ -14,8 +14,8 @@ if __name__ == "__main__":
     if not os.path.exists("Data/CompiledFiles/compiled_public_key_chain.json"):
         compile = Compile()
         compile.compilePublicKeyChain()
-    if not os.path.exists("Data/CompiledFiles/accounts.csv"):
-        with open("Data/CompiledFiles/accounts.csv") as file:
+    if not os.path.exists("Data/UserData/accounts.csv"):
+        with open("Data/UserData/accounts.csv", "w") as file:
             databasewriter = csv.writer(
                 file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
             )
