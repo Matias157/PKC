@@ -220,7 +220,7 @@ class Ui_verify_results_window(object):
                 self.showMsgBox(
                     "Success",
                     "Certificate installed!",
-                    "Certificate has been successfully installed!",
+                    "Certificate has been successfully installed",
                     False,
                     False,
                 )
@@ -248,7 +248,7 @@ class Ui_verify_results_window(object):
                 self.showMsgBox(
                     "Success",
                     "Certificate removed!",
-                    "Certificate has been successfully removed!",
+                    "Certificate has been successfully removed",
                     False,
                     False,
                 )

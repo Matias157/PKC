@@ -178,9 +178,9 @@ class Ui_create_certificate_window(object):
     def showMsgBox(self, out, create_certificate_window, main_window):
         msg = QMessageBox()
         if out[0]:
-            msg.setWindowTitle("Completion")
-            msg.setText("Execution Completed!")
-            msg.setInformativeText("No Execution Details")
+            msg.setWindowTitle("Success")
+            msg.setText("Certificate Created!")
+            msg.setInformativeText("Certificate was successfuly created")
             msg.setIcon(QMessageBox.Information)
             msg.setStandardButtons(QMessageBox.Ok)
             msg.buttonClicked.connect(

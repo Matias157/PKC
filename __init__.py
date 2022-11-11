@@ -1,5 +1,6 @@
 import sys
 import os.path
+import csv
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QFile, QTextStream
 from GUI.Scripts.sign_window import Ui_signinsignup_window
@@ -13,6 +14,12 @@ if __name__ == "__main__":
     if not os.path.exists("Data/CompiledFiles/compiled_public_key_chain.json"):
         compile = Compile()
         compile.compilePublicKeyChain()
+    if not os.path.exists("Data/CompiledFiles/accounts.csv"):
+        with open("Data/CompiledFiles/accounts.csv") as file:
+            databasewriter = csv.writer(
+                file, delimiter=",", quotechar='"', quoting=csv.QUOTE_MINIMAL
+            )
+            databasewriter.writerow(["address", "endpoint", "password"])
     app = QtWidgets.QApplication(sys.argv)
 
     file = QFile("dark/stylesheet.qss")

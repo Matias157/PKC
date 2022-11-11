@@ -22,7 +22,7 @@ class GetInfo(object):
         self.w3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
         public_key_chain_factory = self.w3.eth.contract(
-            address="0xF5e4e5644C60364e4f5c282b548F4404c38fE268",
+            address="0x6De305f48aB253a92854dd04262a625450391A6E",
             abi=self.abi,
             bytecode=self.bytecode,
         )
