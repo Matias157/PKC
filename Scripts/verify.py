@@ -28,16 +28,16 @@ class Verify(object):
         )
 
         try:
-            stored_value = public_key_chain_factory.functions.fQuery(url).call()
+            certs = public_key_chain_factory.functions.fQuery(url).call()
         except Exception as e:
             return [False, e]
 
-        num = len(stored_value)
+        num = len(certs)
         output = []
         for i in range(num):
             try:
                 stored_value = public_key_chain_factory.functions.fGetAllInfo(
-                    stored_value[i]
+                    certs[i]
                 ).call()
             except Exception as e:
                 return [False, e]
